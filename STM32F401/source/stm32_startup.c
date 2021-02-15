@@ -2,7 +2,7 @@
 #include<stdint.h>
 
 #define SRAM_START  0x20000000U
-#define SRAM_SIZE   (96U * 1024U) //96KB of SRAM in STM32F401x
+#define SRAM_SIZE   (64U * 1024U) //64KB of SRAM in STM32F401x
 #define SRAM_END    ((SRAM_START) + (SRAM_SIZE))
 
 #define STACK_START   SRAM_END
@@ -19,7 +19,7 @@ extern uint32_t _ebss;
 
 int main(void);
 
-void __libc_init_array(void);
+//void __libc_init_array(void);
 
 
 /* function prototypes of STM32F401x system exception and IRQ handlers */
@@ -178,31 +178,25 @@ void Reset_Handler(void)
 {
 	//copy .data section to SRAM
 	uint32_t size = (uint32_t)&_edata - (uint32_t)&_sdata;
+
+	uint8_t *pDst = (uint8_t *)&_sdata;
+       	uint8_t *pSrc = (uint8_t *)&_edata;	
 	
-	uint8_t *pDst = (uint8_t*)&_sdata; //sram
-	uint8_t *pSrc = (uint8_t*)&_la_data; //flash
-	
-	for(uint32_t i =0 ; i < size ; i++)
+	for(uint32_t i = 0; i < size; i++)
 	{
 		*pDst++ = *pSrc++;
 	}
-	
 	//Init. the .bss section to zero in SRAM
 	size = (uint32_t)&_ebss - (uint32_t)&_sbss;
-	pDst = (uint8_t*)&_sbss;
-	for(uint32_t i =0 ; i < size ; i++)
+
+	pDst = (uint8_t *)&_sbss;
+	for(uint32_t i = 0; i < size; i++)
 	{
 		*pDst++ = 0;
 	}
 
-	__libc_init_array();
+	//__libc_init_array();
 	
 	main();
 	
 }
-
-
-
-
-
-

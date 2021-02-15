@@ -1,3 +1,6 @@
 *.s
 *.o
 main.s
+*.map
+*~
+*.elf
